@@ -1,0 +1,134 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+  background-image: url('../../assets/首頁.jpg');
+  background-size: cover; /* 讓圖片覆蓋整個頁面 */
+  background-repeat: no-repeat; /* 不重複 */
+  background-position: center center; /* 圖片居中 */
+  margin: 0; /* 移除默認邊距 */
+  height: 100vh; /* 確保背景覆蓋整個視窗高度 */
+  display: flex; /* 使用 Flexbox 居中內容 */
+  justify-content: center; /* 水平居中 */
+  align-items: center; /* 垂直居中 */
+}
+
+.login-container {
+  opacity: 0.95;
+  background: rgb(246, 246, 246);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-radius: 5px;
+}
+
+.login-header {
+  background:linear-gradient(rgb(243, 212, 242),rgb(175, 221, 188),rgb(182, 230, 228));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 500px;
+  height: 80px;
+  border-radius: 5px;
+}
+
+.logo {
+  height: 60px;
+}
+
+.site-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-right: 10px;
+}
+.login-box h1 {
+  font-size: 32px;
+  color: #036915;
+  margin-bottom: 20px;
+}
+.login-box {
+  opacity: 0.95;
+  padding: 0px 50px 50px 50px;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+}
+
+.login-form .form-group {
+  margin-bottom: 10px;
+  text-align: left;
+}
+
+.login-form .form-group label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.login-form .form-group input {
+  width: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+}
+
+.login-button {
+  width: 100%;
+  padding: 10px;
+  background-color: #13a42e;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.login-button:hover {
+  background-color: #0e641e;
+}
+
+.social-login {
+  margin-top: 20px;
+}
+
+.google-login,
+.facebook-login {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.google-login {
+  background-color: white;
+  color: #333;
+}
+
+.google-login:hover {
+  background-color: #e0e0e0;
+}
+
+.facebook-login {
+  background-color: white;
+  color: #333;
+}
+
+.facebook-login:hover {
+  background-color: #e0e0e0;
+}
+
+.register-link {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.register-link span {
+  margin-right: 5px;
+}
