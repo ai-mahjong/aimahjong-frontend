@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../css/註冊登入/Login.css";
 import logo from "../assets/mahjong.png";
@@ -7,6 +7,13 @@ function Login() {
   const [username_or_email, setUsernameOrEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+
+  useEffect(() => {
+    document.body.className = "login-page"; // 設置背景樣式
+    return () => {
+      document.body.className = ""; // 清理背景樣式，避免影響其他頁面
+    };
+  }, []);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -37,42 +44,42 @@ function Login() {
 
   return (
     <div className="login-container">
-         <header className="login-header">
-            <img src={logo} alt="Logo" className="logo" onClick={home} />
-            <span className="site-title">
-            <h3>AI麻將遊戲</h3>
-            </span>
-        </header>
-        <div className="login-box">
+      <header className="login-header">
+        <img src={logo} alt="Logo" className="logo" onClick={home} />
+        <span className="site-title">
+          <h3>AI麻將遊戲</h3>
+        </span>
+      </header>
+      <div className="login-box">
         <h1>登入 | Sign in</h1>
         <form className="login-form" onSubmit={handleLogin}>
-            <div className="form-group">
+          <div className="form-group">
             <label>使用者帳號或電子郵件</label>
             <input
-                type="text"
-                placeholder="請輸入您的使用者帳號或電子郵件"
-                value={username_or_email}
-                onChange={(e) => setUsernameOrEmail(e.target.value)}
+              type="text"
+              placeholder="請輸入您的使用者帳號或電子郵件"
+              value={username_or_email}
+              onChange={(e) => setUsernameOrEmail(e.target.value)}
             />
-            </div>
-            <div className="form-group">
+          </div>
+          <div className="form-group">
             <label>密碼</label>
             <input
-                type="password"
-                placeholder="請輸入您的密碼"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+              type="password"
+              placeholder="請輸入您的密碼"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
             />
-            </div>
-            <button type="submit" className="login-button">
+          </div>
+          <button type="submit" className="login-button">
             登入
-            </button>
+          </button>
         </form>
         <div className="register-link">
-            <span>Don&apos;t have an account?</span>
-            <Link to="/register">Register</Link>
+          <span>Don&apos;t have an account?</span>
+          <Link to="/register">Register</Link>
         </div>
-        </div>
+      </div>
     </div>
   );
 }

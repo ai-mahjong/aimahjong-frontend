@@ -1,17 +1,22 @@
 body {
   margin: 0;
   font-family: Arial, sans-serif;
-  background-color: #f4f4f4;
-  background-image: url('../../assets/首頁.jpg');
-  background-size: cover; /* 讓圖片覆蓋整個頁面 */
-  background-repeat: no-repeat; /* 不重複 */
-  background-position: center center; /* 圖片居中 */
-  margin: 0; /* 移除默認邊距 */
-  height: 100vh; /* 確保背景覆蓋整個視窗高度 */
   display: flex; /* 使用 Flexbox 居中內容 */
   justify-content: center; /* 水平居中 */
   align-items: center; /* 垂直居中 */
+  height: 100vh;
 }
+/* 登入和註冊頁的背景 */
+body.login-page, 
+body.register-page {
+  background-image: url('../../assets/首頁.jpg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
+  height: 100vh; /* 確保背景覆蓋整個視窗高度 */
+  margin: 0;
+  overflow: hidden; /* 禁止頁面滾動，讓背景固定 */
+}  
 
 .login-container {
   opacity: 0.95;

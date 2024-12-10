@@ -1,17 +1,17 @@
 body {
     margin: 0;
     font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
-    background-image: url('../../assets/首頁.jpg');
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center center;
     height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
   }
- 
+  .background{
+    background-image: url('../../assets/首頁.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+  }
   .register-container {
     opacity: 0.95;
     background: rgb(246, 246, 246);
