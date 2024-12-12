@@ -87,7 +87,12 @@ function Gamestart() {
       }
     };
     fetchGameData();
+    const interval = setInterval(fetchGameData, 1000);
+
+    // 清除定時器
+    return () => clearInterval(interval);
   }, [gameId]);
+
   
   const handleDiscard = async (tileId, tileName) => {//丟牌
     const confirmDiscard = window.confirm(`確定要丟棄這張牌嗎？ (${tileName})`);
