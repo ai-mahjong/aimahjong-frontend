@@ -5,68 +5,64 @@
     color: #ffffff;
 }
 .tiles-container {
-    display: flex;
-    flex-wrap: wrap;
-    padding: 20px;
-    justify-content: center;
-  }
-  
-  .tile {
-    width: 60px;
-    height: 90px;
-    background: linear-gradient(0.35turn, #dcdcdc, #ffffff,#dcdcdc);
-    border-radius: 8px;
-    box-shadow: 
-    0 25px 4.5px -4px rgba(161, 148, 148, 0.25) inset, /* 添加內陰影 */
-    2px 4px 6px rgba(0, 0, 0, 0.2),/* 外陰影保持不變 */
-    0 -55px 4px -50px rgba(161, 148, 148, 0.25) inset; 
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-between;
-    position: relative;
-  }
-  
-  .tile-top {
-    width: 100%;
-    height: 15%;
-    background: linear-gradient(to left, #0B5605, #16940B,#61DC35,#16940B,#16940B); /* 綠色 */
-    border-top-left-radius: 8px;
-    border-top-right-radius: 8px;
-  }
-  
-  .tile-content {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .tile-number {
-    font-size: 20px;
-    font-weight: bold;
-    color: black;
-    margin-bottom: 5px;
-  }
-  
-  .tile-text {
-    font-size: 24px;
-    font-weight: bold;
-    color: #d32f2f; /* 紅色 */
-  }
-  .tile img {
-    width: 50px;
-    height: 50px;
-    object-fit: contain;
-  }
+  display: flex; /* 横向排列手牌 */
+  justify-content: center; /* 水平居中 */
+  align-items: flex-end; /* 垂直底部对齐 */
+  position: fixed; /* 固定在页面底部 */
+  bottom: 100px; /* 与 footer 保持适当间距 */
+  left: 50%; /* 水平居中 */
+  transform: translateX(-50%); /* 使整个容器真正居中 */
+  z-index: 10; /* 确保在 footer 之上 */
+  padding: 0 20px; /* 控制边距 */
+}
+
+.tile {
+  width: 60px; /* 每张牌的宽度 */
+  height: 90px; /* 每张牌的高度 */
+  background: linear-gradient(0.35turn, #dcdcdc, #ffffff, #dcdcdc);
+  border-radius: 8px; /* 圆角效果 */
+  box-shadow: 
+      0 25px 4.5px -4px rgba(161, 148, 148, 0.25) inset, /* 添加内阴影 */
+      2px 4px 6px rgba(0, 0, 0, 0.2), /* 外阴影 */
+      0 -55px 4px -50px rgba(161, 148, 148, 0.25) inset;
+  display: flex; /* 用于图像和内容的对齐 */
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  position: relative; /* 支持后续动态定位 */
+  margin: 0; /* 取消默认外边距 */
+}
+
+.tile-top {
+  width: 100%; /* 填满顶部区域 */
+  height: 15%; /* 占高度的 15% */
+  background: linear-gradient(to left, #0B5605, #16940B, #61DC35, #16940B, #16940B); /* 顶部绿条 */
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+.tile-content {
+  flex-grow: 1; /* 填充剩余空间 */
+  display: flex; /* 中心对齐内容 */
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.tile img {
+  width: 50px;
+  height: 50px;
+  object-fit: contain; /* 图像保持原比例缩放 */
+  margin: 10px 0; /* 图像上下间距 */
+}
+
   .play footer {
     background-color: rgba(0, 0, 0, 0.526); /* Black background */
     color: white; /* White text */
     display: flex; /* Flexbox to align items in a row */
     justify-content: space-evenly; /* Evenly spaced items */
     align-items: center; /* Vertically center the items */
-    padding: 8px 16px; /* Reduced padding for less space */
+    padding: 0px 16px; /* Reduced padding for less space */
     position: fixed; /* Keep footer fixed at the bottom */
     left: 0;
     bottom: 0;
@@ -77,5 +73,255 @@
     margin: 0;
   text-align: center; /* Center text inside each element */
   }
+  .tile-back {
+    width:45px; /* 牌背寬度 */
+    height: 70px; /* 牌背高度 */
+    background: linear-gradient(to bottom, #ffffff 15%, #0B5605 15%, #16940B,#61DC35,#16940B,#0B5605); /* 白色頂部條帶 + 綠色漸層背景 */
+    border-radius: 8px; /* 圓角效果 */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); /* 添加陰影效果 */
+    position: relative; /* 相對定位以支持其他內部樣式 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
   
+  .other-players {
+    position: relative;
+  }
+  
+  .top-player {
+    display: flex; /* Flexbox to align items in a row */
+    justify-content: space-evenly; /* Evenly spaced items */
+    align-items: center; /* Vertically center the items */
+    padding: 8px 16px; /* Reduced padding for less space */
+    position: fixed; /* Keep footer fixed at the bottom */
+    top: 5%;
+    right:25%
+  }
+  
+  .left-player {
+    position: absolute;
+    top: 45%;
+    left: 15%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .right-player {
+    position: absolute;
+    top: 45%;
+    right: 15%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* 左側玩家的牌背 */
+  .tile-left {
+    width: 55px;
+    height: 80px;
+    background: url('../assets/mahjong/back-left.png') no-repeat center center; /* 替換為牌背圖片 */
+    background-size: cover; /* 確保圖片縮放適配 */
+    border-radius: 8px; /* 圓角效果 */
+    margin: -25px 0; /* 上下重疊更多，牌更靠攏 */
+    transform-origin: right center; /* 基準點設置在右側 */
+    position: relative; /* 適配動態偏移 */
+    z-index: 10; /* 確保牌的疊加層次 */
+  }
+  
+  /* 右側玩家的牌背 */
+  .tile-right {
+    width: 55px;
+    height: 80px;
+    background: url('../assets/mahjong/back-right.png') no-repeat center center; /* 替換為牌背圖片 */
+    background-size: cover; /* 確保圖片縮放適配 */
+    border-radius: 8px; /* 圓角效果 */
+    margin: -25px 0; /* 上下重疊更多，牌更靠攏 */
+  }
+  .tiles-container .tile {
+    position: relative;
+    display: inline-block;
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* 加入動畫過渡效果 */
+  }
+  
+  /* 當滑鼠滑到牌上的時候 */
+  .tiles-container .tile:hover {
+    transform: translateY(-10px); /* 牌浮起 */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* 添加陰影效果 */
+  }
+  .advice-button {
+    background-color: #4caf50; /* 綠色背景 */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin: 10px 0;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .advice-button:hover {
+    background-color: #45a049; /* 更深的綠色 */
+  }
+  
+  .advice-button:active {
+    background-color: #3e8e41;
+  }
+  
+  .advice-button:disabled {
+    background-color: #d3d3d3; /* 灰色禁用狀態 */
+    cursor: not-allowed;
+  }
+  .draw-button {
+    background-color: #2196f3; /* 藍色背景 */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin: 10px 0;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .draw-button:hover {
+    background-color: #1e88e5; /* 更深的藍色 */
+  }
+  
+  .draw-button:active {
+    background-color: #1565c0;
+  }
+  
+  .draw-button:disabled {
+    background-color: #d3d3d3; /* 灰色禁用狀態 */
+    cursor: not-allowed;
+  }
+  .remaining-tiles {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #2bff00;
+  }
+  .discarded-tiles-container {
+    display: flex;
+    flex-wrap: wrap; /* 支持換行 */
+    gap: 8px; /* 棄牌之間的間距 */
+    justify-content: center;
+    padding: 10px;
+  }
+  
+  /* 棄牌樣式 */
+  .discarded-tile {
+    width: 40px; /* 每张牌的宽度 */
+    height: 60px; /* 每张牌的高度 */
+    background: linear-gradient(0.35turn, #dcdcdc, #ffffff, #dcdcdc);
+    border-radius: 8px; /* 圆角效果 */
+    display: flex; /* 用于图像和内容的对齐 */
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    position: relative; /* 支持后续动态定位 */
+    margin: 0; /* 取消默认外边距 */
+  }
+  
+  .discarded-tile-bottom {
+    width: 100%;
+    height: 10%;
+    background: linear-gradient(to left, #0B5605, #16940B, #61DC35, #16940B, #16940B); /* 顶部绿条 */
+    border-top: 1px solid #ccc;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+  }
+  
+  .discarded-tile-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 90%;
+  }
+  
+  .discarded-tile-image {
+    max-width: 90%;
+    max-height: 90%;
+  }
+  
+  .discarded-tile-placeholder {
+    font-size: 12px;
+    font-weight: bold;
+    color: #888;
+    text-align: center;
+  }
+  discarded-areas {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+  
+  /* 棄牌區域通用樣式 */
+  .discarded-area {
+    position: absolute;
+    display: flex;
+    flex-wrap: wrap; /* 超出區域自動換行 */
+    justify-content: center;
+    align-items: center;
+    width: 400px; /* 可調整 */
+    height: 150px; /* 可調整 */
+    padding: 0px;
+    border-radius: 8px; /* 可選圓角 */
+  }
+  .discarded-area.top-player {
+    top: 20%; /* 距離頁面頂部 */
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  .exposed-group {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .exposed-meld {
+    display: flex; /* 每個 meld 的牌橫向排列 */
+  }
+  
+  .exposed-tile {
+    width: 40px; /* 每张牌的宽度 */
+    height: 60px; /* 每张牌的高度 */
+    background: linear-gradient(0.35turn, #dcdcdc, #ffffff, #dcdcdc);
+    border-radius: 8px; /* 圆角效果 */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+  }
+  
+  .exposed-tile-bottom {
+    width: 100%;
+    height: 10%;
+    background: linear-gradient(to left, #0B5605, #16940B, #61DC35, #16940B, #16940B); /* 底部绿条 */
+    border-top: 1px solid #ccc;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+  }
+  
+  .exposed-tile-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 90%;
+  }
+  
+  .exposed-tile-image {
+    max-width: 90%;
+    max-height: 90%;
+  }
+  
+  .exposed-tile-placeholder {
+    font-size: 12px;
+    font-weight: bold;
+    color: #888;
+    text-align: center;
+  }
   

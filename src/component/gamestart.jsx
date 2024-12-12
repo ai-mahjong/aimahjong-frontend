@@ -35,13 +35,18 @@ import Ton from '../assets/mahjong/Ton.png';
 import Nan from '../assets/mahjong/Nan.png';
 import Shaa from '../assets/mahjong/Shaa.png';
 import Pei from '../assets/mahjong/Pei.png';
-
+import ActionModal from "./ActionModal"; // 引入 ActionModal
+import DiscardAdviceModal from "./DiscardAdviceModal.jsx";
 function Gamestart() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isAdviceModalOpen, setIsAdviceModalOpen] = useState(false);
+  const [advice, setAdvice] = useState(null);
   const { gameId } = useParams();
   const [boardData, setBoardData] = useState(null);
-  const [gameData, setGameData] = useState(null);  // State for game data
-  const [roundWind, setRoundWind] = useState(null);  // State for the current round wind
-  const [playerName, setPlayerName] = useState(null);  // State for player name
+  const [gameData, setGameData] = useState(null);
+  const [playerName, setPlayerName] = useState(null);
+
+
   useEffect(() => {
     document.body.className = "gamestart-page";
     return () => {
@@ -50,222 +55,379 @@ function Gamestart() {
   }, []);
 
   useEffect(() => {
-    const fetchGameBoard = async () => {
-      try {
-        if (!gameId) {
-          console.error("gameId 未提供");
-          return;
-        }
-  
-        const token = localStorage.getItem("token");
-        if (!token) {
-          console.error("Token 未找到，請先登入");
-          return;
-        }
-  
-        const response = await axios.get(
-          `http://52.79.51.118:8080/api/v1/games/${gameId}/boards`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
-  
-        if (response.status === 200) {
-          setBoardData(response.data);
-        } else {
-          console.error("Failed to fetch game board data");
-        }
-      } catch (error) {
-        console.error("Error fetching game board:", error.response?.data || error);
-      }
-    };
-  
     const fetchGameData = async () => {
       try {
-        if (!gameId) {
-          console.error("gameId 未提供");
-          return;
-        }
-  
         const token = localStorage.getItem("token");
-        if (!token) {
-          console.error("Token 未找到，請先登入");
-          return;
-        }
-  
-        const response = await axios.get(
-          `http://52.79.51.118:8080/api/v1/games/${gameId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
-  
-        if (response.status === 200) {
-          setGameData(response.data);
-        } else {
-          console.error("Failed to fetch game data");
-        }
-      } catch (error) {
-        console.error("Error fetching game data:", error.response?.data || error);
-      }
-    };
-  
-    const fetchRoundWind = async () => {
-      try {
-        if (!gameId) {
-          console.error("gameId 未提供");
-          return;
-        }
-  
-        const token = localStorage.getItem("token");
-        if (!token) {
-          console.error("Token 未找到，請先登入");
-          return;
-        }
-  
-        const response = await axios.get(
-          `http://52.79.51.118:8080/api/v1/games/${gameId}/rounds/current`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
-  
-        if (response.status === 200) {
-          setRoundWind(response.data.roundWind);
-        } else {
-          console.error("Failed to fetch current round wind");
-        }
-      } catch (error) {
-        console.error("Error fetching round wind:", error.response?.data || error);
-      }
-    };
-  
-    const fetchUserInfo = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          console.error("Token 未找到，請先登入");
+        if (!token || !gameId) {
+          console.error("Token 或 gameId 未找到");
           return;
         }
 
-        const response = await axios.get(
-          `http://52.79.51.118:8080/api/v1/users/info`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
+        const [boardRes, gameRes, userRes] = await Promise.all([
+          axios.get(`http://52.79.51.118:8080/api/v1/games/${gameId}/current-player-view`, {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+          axios.get(`http://52.79.51.118:8080/api/v1/games/${gameId}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+          axios.get(`http://52.79.51.118:8080/api/v1/users/info`, {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+        ]);
 
-        if (response.status === 200) {
-          setPlayerName(response.data.name);  // Set player's name from API
-        } else {
-          console.error("Failed to fetch user information");
+        setBoardData(boardRes.data);
+        setGameData(gameRes.data);
+        setPlayerName(userRes.data.name);
+        // 當狀態為 "THINKING_FOR_CALL" 時自動打開 ActionModal
+        if (boardRes.data.hand_status === "WAITING_FOR_CALL") {
+          setIsModalOpen(true);
         }
       } catch (error) {
-        console.error("Error fetching user info:", error.response?.data || error);
+        console.error("Error fetching data:", error.response?.data || error);
       }
     };
-  
-    fetchGameBoard();
     fetchGameData();
-    fetchRoundWind();
-    fetchUserInfo();  // Fetch user info when the component mounts
   }, [gameId]);
   
-  // 根據 tile_id 篩選不同的牌類
-  const getAllTiles = (tiles) => {
-    return tiles.map((tile) => ({
-      id: tile.id,
-      name: tile.tile_name,
-      tileId: tile.tile_id,
-    }));
-  };
-
-  // 根據tileId來顯示圖片
-  const getTileImage = (tileId) => {
-    if (tileId >= 9 && tileId <= 17) { // 筒子牌 (Pin1 to Pin9)
-      const pinIndex = tileId - 8; // Map tileId 9 to Pin1, 10 to Pin2, etc.
-      return [Pin1, Pin2, Pin3, Pin4, Pin5, Pin6, Pin7, Pin8, Pin9][pinIndex - 1]; // Adjusting for 1-based index
-    } else if (tileId >= 18 && tileId <= 26) { // 條子牌 (Sou1 to Sou9)
-      const souIndex = tileId - 17; // Map tileId 18 to Sou1, 19 to Sou2, etc.
-      return [Sou1, Sou2, Sou3, Sou4, Sou5, Sou6, Sou7, Sou8, Sou9][souIndex - 1]; // Adjusting for 1-based index
-    } else if (tileId >= 0 && tileId <= 8) { // 萬子牌 (Man1 to Man9)
-      const manIndex = tileId; // Directly map tileId 0 to Man1, 1 to Man2, etc.
-      return [Man1, Man2, Man3, Man4, Man5, Man6, Man7, Man8, Man9][manIndex]; // No need for offset
-    } else if (tileId === 27) { // 東風 (Ton)
-      return Ton;
-    } else if (tileId === 28) { // 南風 (Nan)
-      return Nan;
-    } else if (tileId === 29) { // 西風 (Shaa)
-      return Shaa;
-    } else if (tileId === 30) { // 北風 (Pei)
-      return Pei;
-    } else if (tileId === 31) { // 中 (Chun)
-      return Chun;
-    } else if (tileId === 32) { // 發 (Hatsu)
-      return Hatsu;
-    } else if (tileId === 33) { // 白 (White Dragon) - Do not show image or text
-      return null; // No image for 白 (White Dragon)
+  const handleDiscard = async (tileId, tileName) => {//丟牌
+    const confirmDiscard = window.confirm(`確定要丟棄這張牌嗎？ (${tileName})`);
+    if (!confirmDiscard) {
+      return; // 如果使用者取消丟牌，直接結束函數
     }
-    return null; // Default fallback if no image found for other tiles
+  
+    try {
+      const token = localStorage.getItem("token");
+      if (!token || !gameId) {
+        console.error("Token 或 gameId 未找到");
+        return;
+      }
+  
+      const response = await axios.post(
+        `http://52.79.51.118:8080/api/v1/games/${gameId}/discard/${tileId}`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+  
+      if (response.status === 200) {
+        console.log("出牌成功", response.data);
+        setBoardData(response.data); // 更新遊戲狀態
+      }
+    } catch (error) {
+      console.error("出牌失敗:", error.response?.data || error);
+    }
+  };
+  const handleDrawTile = async () => {//抽牌
+    try {
+      const token = localStorage.getItem("token");
+      if (!token || !gameId) {
+        console.error("Token 或 gameId 未找到");
+        return;
+      }
+      const response = await axios.post(
+        `http://52.79.51.118:8080/api/v1/games/${gameId}/draw-tile`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+  
+      if (response.status === 200) {
+        console.log("抓牌成功", response.data);
+        setBoardData(response.data); // 更新遊戲狀態
+      }
+    } catch (error) {
+      console.error("抓牌失敗:", error.response?.data || error);
+    }
+  };
+  const handleCancelCall = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token || !gameId) {
+        console.error("Token 或 gameId 未找到");
+        return;
+      }
+
+      const response = await axios.post(
+        `http://52.79.51.118:8080/api/v1/games/${gameId}/cancel-for-call`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      if (response.status === 200) {
+        console.log("取消叫牌成功", response.data);
+        setBoardData(response.data); // 更新遊戲狀態
+        setIsModalOpen(false); // 關閉 modal
+      }
+    } catch (error) {
+      console.error("取消叫牌失敗:", error.response?.data || error);
+    }
+  };
+  
+  const handleDiscardAdvice = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token || !gameId) {
+        console.error("Token 或 gameId 未找到");
+        return;
+      }
+  
+      const response = await axios.post(
+        `http://52.79.51.118:8080/api/v1/games/${gameId}/generate-discard-advice`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+  
+      if (response.status === 200) {
+        setAdvice(response.data); // 儲存建議
+        setIsAdviceModalOpen(true); // 開啟建議 Modal
+      }
+    } catch (error) {
+      console.error("取得出牌建議失敗:", error.response?.data || error);
+    }
+  };
+  const handleChowTile = async (combinationIndex) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token || !gameId) {
+        console.error("Token 或 gameId 未找到");
+        return;
+      }
+  
+      const response = await axios.post(
+        `http://52.79.51.118:8080/api/v1/games/${gameId}/chow-tile/${combinationIndex}`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+  
+      if (response.status === 200) {
+        console.log("吃牌成功", response.data);
+        setBoardData(response.data); // 更新遊戲狀態
+      }
+    } catch (error) {
+      console.error("吃牌失敗:", error.response?.data || error);
+    }
+  };
+  
+  const handlePongTile = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token || !gameId) {
+        console.error("Token 或 gameId 未找到");
+        return;
+      }
+  
+      const response = await axios.post(
+        `http://52.79.51.118:8080/api/v1/games/${gameId}/pong-tile`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+  
+      if (response.status === 200) {
+        console.log("碰牌成功", response.data);
+        setBoardData(response.data); // 更新遊戲狀態
+      }
+    } catch (error) {
+      console.error("碰牌失敗:", error.response?.data || error);
+    }
+  };
+  
+  const renderDiscardedTiles = (discardedTiles) => {
+    if (!discardedTiles || !discardedTiles.tiles) return null;
+    return (
+      <div className="discarded-tiles-container">
+        {discardedTiles.tiles.map((tile) => (
+          <div key={tile.id} className={`discarded-tile tile-${tile.tile_id}`}>
+            <div className="discarded-tile-content">
+              {tile.tile_id === 33 ? (
+                <div className="discarded-tile-placeholder"></div> // 替代白板樣式
+              ) : (
+                <img
+                  src={getTileImage(tile.tile_id)}
+                  alt={tile.tile_name}
+                  className="discarded-tile-image"
+                />
+              )}
+            </div>
+            <div className="discarded-tile-bottom"></div>
+          </div>
+        ))}
+      </div>
+    );
+  };
+  const renderExposedTiles = (exposedTileList) => {
+    if (!exposedTileList || exposedTileList.length === 0) return null;
+  
+    return exposedTileList.map((meld, index) => (
+      <div key={index} className="exposed-group">
+        {meld.tiles.map((tile) => (
+          <div key={tile.id} className="exposed-tile">
+            <div className="exposed-tile-content">
+              {tile.tile_id === 33 ? (
+                <div className="exposed-tile-placeholder">白板</div>
+              ) : (
+                <img
+                  src={getTileImage(tile.tile_id)}
+                  alt={tile.tile_name}
+                  className="exposed-tile-image"
+                />
+              )}
+            </div>
+            <div className="exposed-tile-bottom"></div>
+          </div>
+        ))}
+      </div>
+    ));
+  };
+  
+  
+  const handleAction = (action) => {
+    console.log(`選擇的行動: ${action}`);
+    if (action === "吃") {
+      // 如果有多個吃牌組合，可以提示玩家選擇組合
+      const chowCombinations = boardData?.chow_combinations || [];
+      if (chowCombinations.length === 1) {
+        handleChowTile(0); // 自動選擇唯一的吃牌組合
+      } else if (chowCombinations.length > 1) {
+        // 顯示選擇菜單讓玩家選擇組合
+        console.log("多個吃牌組合，請選擇:");
+        chowCombinations.forEach((combo, index) => {
+          console.log(`組合 ${index + 1}:`, combo);
+        });
+      }
+    } else if (action === "碰") {
+      handlePongTile();
+    }
+    setIsModalOpen(false);
+  };
+  
+  const getTileImage = (tileId) => {
+    const tiles = {
+      9: Pin1, 10: Pin2, 11: Pin3, 12: Pin4, 13: Pin5, 14: Pin6, 15: Pin7, 16: Pin8, 17: Pin9,
+      18: Sou1, 19: Sou2, 20: Sou3, 21: Sou4, 22: Sou5, 23: Sou6, 24: Sou7, 25: Sou8, 26: Sou9,
+      0: Man1, 1: Man2, 2: Man3, 3: Man4, 4: Man5, 5: Man6, 6: Man7, 7: Man8, 8: Man9,
+      27: Ton, 28: Nan, 29: Shaa, 30: Pei, 31: Chun, 32: Hatsu
+    };
+    return tiles[tileId] || null;
   };
 
   return (
     <div className="play">
-      <h1>遊戲進行中...</h1>
       {boardData ? (
         <div>
-          <p>遊戲狀態: {boardData.status || "未知"}</p>
-          <p>等待出牌 ID: {boardData.active_game_player_id || "未知"}</p>
-          <p>輪風: {boardData.round_wind || "未知"}</p>
-          <p>現存牌組狀態: {boardData.last_discarded_tile?.tile_name || "無"}</p>
+          <DiscardAdviceModal
+            isOpen={isAdviceModalOpen}
+            onClose={() => setIsAdviceModalOpen(false)}
+            advice={advice}
+          />
+          <ActionModal
+            isOpen={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+            onAction={handleAction}
+            acceptableOperations={boardData?.acceptable_operations || []}
+            chowCombinations={boardData?.chow_combinations || []}
+            handleChowTile={handleChowTile}
+            onCancelCall={handleCancelCall}
+          />
 
-          <div className="player-tiles">
-            <h2>玩家手牌</h2>
-            <div className="tiles-container">
-              {getAllTiles(boardData.player_tiles[0]?.hand_tiles?.tiles || []).map((tile) => (
-                <div key={tile.id} className={`tile tile-${tile.tileId}`}>
-                  <div className="tile-top"></div>
-                  <div className="tile-content">
-                    {tile.tileId >= 0 && tile.tileId <= 8 ? (
-                      // Display image for 萬子 tiles (without text)
-                      <img src={getTileImage(tile.tileId)} alt={tile.name} />
-                    ) : (
-                      // Display image for other tiles (筒子, 條子, 風, 中發白)
-                      getTileImage(tile.tileId) ? (
-                        <img src={getTileImage(tile.tileId)} alt={tile.name} />
-                      ) : (
-                        <div className="tile-placeholder"></div> // Empty placeholder for 白 (White Dragon)
-                      )
-                    )}
-                  </div>
-                  <div className="tile-bottom"></div>
+            {/* 抓牌邏輯 */}
+            <div className="player-tiles">
+              
+          <div className="tiles-container">
+          {renderExposedTiles(boardData.player_tile?.exposed_tile_list)}
+            {boardData.player_tile?.hand_tiles?.tiles.map((tile) => (
+              <div
+                key={tile.id}
+                className={`tile tile-${tile.tile_id}`}
+                onClick={() => handleDiscard(tile.id, tile.tile_name)}
+              >
+                <div className="tile-top"></div>
+                <div className="tile-content">
+                  {tile.tile_id === 33 ? (
+                    <div className="tile-placeholder"></div>
+                  ) : (
+                    <img src={getTileImage(tile.tile_id)} alt={tile.tile_name} />
+                  )}
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
           </div>
+          
+        </div>
+
+       
+          <div className="top-player">
+          {renderExposedTiles(boardData.opposite_player_tile?.exposed_tile_list)}
+            {[...Array(boardData.opposite_player_tile?.hand_tiles?.tile_count || 0)].map((_, index) => (
+              <div key={index} className="tile-back"></div>
+            ))}
+
+          </div>
+
+          {/* 上家手牌 */}
+          <div className="left-player">
+          {renderExposedTiles(boardData.upwind_player_tile?.exposed_tile_list)}
+            {[...Array(boardData.upwind_player_tile?.hand_tiles?.tile_count || 0)].map((_, index) => {
+              const translateX = -10 * index;
+              const style = {
+                transform: `rotate(-15deg) translateX(${translateX}px)`,
+              };
+              return <div key={index} className="tile-left" style={style}></div>;
+            })}
+          </div>
+
+          {/* 下家手牌 */}
+          <div className="right-player">
+          {renderExposedTiles(boardData.downwind_player_tile?.exposed_tile_list)}
+            {[...Array(boardData.downwind_player_tile?.hand_tiles?.tile_count || 0)].map((_, index) => {
+              const translateX = 10 * index;
+              const style = {
+                transform: `rotate(15deg) translateX(${translateX}px)`,
+              };
+              return <div key={index} className="tile-right" style={style}></div>;
+            })}
+          </div>
+          
+          <div className="discarded-areas">
+  {/* 上家棄牌區 */}
+  <div className="discarded-area top-player">
+    {renderDiscardedTiles(boardData.opposite_player_tile?.discarded_tiles)}
+    
+  </div>
+
+  {/* 左家棄牌區 */}
+  <div className="discarded-area left-player">
+    {renderDiscardedTiles(boardData.upwind_player_tile?.discarded_tiles)}
+   
+  </div>
+
+  {/* 右家棄牌區 */}
+  <div className="discarded-area right-player">
+    {renderDiscardedTiles(boardData.downwind_player_tile?.discarded_tiles)}
+    
+  </div>
+
+  {/* 下家棄牌區 */}
+  <div className="discarded-area bottom-player">
+    {renderDiscardedTiles(boardData.player_tile?.discarded_tiles)}
+    
+  </div>
+</div>
+
         </div>
       ) : (
         <p>載入中...</p>
       )}
 
-      {/* Footer to display the game data values */}
       {gameData && (
         <footer>
-          <h2>底{gameData.base_point*gameData.dollar_per_point}/台{gameData.fann_point*gameData.dollar_per_point}</h2>
+          <h2>底 {gameData.base_point * gameData.dollar_per_point} / 台 {gameData.fann_point * gameData.dollar_per_point}</h2>
           <h2>{playerName || "bot"}</h2>
-          <h2>當前風圈: {roundWind || "未知"}</h2>
+          <button className="advice-button" onClick={handleDiscardAdvice}>獲取出牌建議</button>
+           {/* 抓牌按鈕 */}
+        {boardData.hand_status === "WAITING_FOR_DRAW" && (
+          <button onClick={handleDrawTile} className="draw-button ">抓牌</button>
+        )}
+        <p className="remaining-tiles">剩餘牌數: {boardData?.wall_tiles?.tile_count || "未知"}</p>
+        <p>{boardData.hand_status || "未知"}</p>
+        <p>下位出牌玩家 ID: {boardData.active_game_player_id || "未知"}</p>
         </footer>
       )}
     </div>
