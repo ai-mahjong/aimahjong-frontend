@@ -208,7 +208,7 @@
     flex-wrap: wrap; /* 支持換行 */
     gap: 8px; /* 棄牌之間的間距 */
     justify-content: center;
-    padding: 10px;
+    padding: 50px 0px 50px 50px;
   }
   
   /* 棄牌樣式 */
@@ -266,8 +266,8 @@
     justify-content: center;
     align-items: center;
     width: 400px; /* 可調整 */
-    height: 150px; /* 可調整 */
-    padding: 0px;
+    height: 100px; /* 可調整 */
+    padding: 20px;
     border-radius: 8px; /* 可選圓角 */
   }
   .discarded-area.top-player {
@@ -275,10 +275,27 @@
     left: 50%;
     transform: translateX(-50%);
   }
+  .discarded-area.left-player {
+    width: 10%;
+    left: 30%;
+    top: 35%;
+    transform: translateX(-50%);
+  }
+  .discarded-area.right-player {
+    width: 10%;
+    left: 70%;
+    top: 35%; 
+    transform: translateX(-50%);
+  }
+  .discarded-area.bottom-player{
+    left: 50%;
+    transform: translateX(-50%);
+  }
   .exposed-group {
     display: flex;
     justify-content: center;
     align-items: center;
+    gap: 5px;
   }
   
   .exposed-meld {
