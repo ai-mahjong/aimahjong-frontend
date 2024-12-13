@@ -29,7 +29,7 @@ const ActionModal = ({
               className="modal-button"
               onClick={() => handleChowTile(index)}
             >
-              組合 {index + 1}: {combo.map((tile) => tile.tile_name).join(", ")}
+              組合 {index}: {combo.map((tile) => tile.tile_name).join(", ")}
             </button>
           ))}
         </div>
